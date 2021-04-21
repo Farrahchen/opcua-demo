@@ -114,7 +114,6 @@ public class OpcUaOperationSupport {
 
             List<MonitoredItemCreateRequest> requests = new ArrayList<>();
             requests.add(request);
-
             //创建监控项，并且注册变量值改变时候的回调函数。
             BiConsumer<UaMonitoredItem, Integer> onItemCreated =
                     (item, id) -> {
