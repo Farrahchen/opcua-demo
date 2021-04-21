@@ -34,7 +34,7 @@ public class OpcUaSubscriptionTask {
 
     private final AtomicLong clientHandles = new AtomicLong(1L);
 
-    @Scheduled(cron = "0/30 * * * * ?")
+    @Scheduled(cron = "0 * 1 * * ?")
     public void subscription() {
         try {
             log.info("开始监听");

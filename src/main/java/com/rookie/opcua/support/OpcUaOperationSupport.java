@@ -10,6 +10,7 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.*;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
@@ -42,15 +43,15 @@ public class OpcUaOperationSupport {
             client.connect().get();
 
             //创建变量节点
-            NodeId nodeId = new NodeId(5, "Counter1");
+            NodeId nodeId = new NodeId(2, "FE6.AFSM.AFSM010_WriteRFID");
 
             //创建Variant对象和DataValue对象
-            Variant v = new Variant(90);
+            Variant v = new Variant("1233344444666");
             DataValue dataValue = new DataValue(v, null, null);
 
             StatusCode statusCode = client.writeValue(nodeId, dataValue).get();
 
-            System.out.println(statusCode.isGood());
+            System.out.println("statusCode 数据写入结果： " + statusCode.toString());
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -104,8 +105,7 @@ public class OpcUaOperationSupport {
 
 
             //创建订阅的变量
-//            NodeId nodeId = new NodeId(5, "Counter1");
-            NodeId nodeId = new NodeId(0, 1555944286);
+            NodeId nodeId = new NodeId(2, "FE6.AFSM.AFSM010_WriteRFID");
             ReadValueId readValueId = new ReadValueId(nodeId, AttributeId.Value.uid(), null, null);
 
             //创建监控项请求
@@ -119,7 +119,15 @@ public class OpcUaOperationSupport {
             BiConsumer<UaMonitoredItem, Integer> onItemCreated =
                     (item, id) -> {
                         item.setValueConsumer((item1, value) -> {
-                            log.info("收到的订阅值: item={}, value={}", item1.getReadValueId().getNodeId(), value.getValue());
+                            String res = value.getValue().getValue().toString();
+                            log.info("收到的订阅值: item={}, value={}", item1.getReadValueId().getNodeId().getIdentifier(), res);
+                            if (res != null ) {
+                                UInteger subscriptionId = subscription.getSubscriptionId();
+                                List<UInteger> ids = new ArrayList<>();
+                                ids.add(subscriptionId);
+                                log.info("=======> 进入回收流程的subscriptionId = {}", subscriptionId);
+                                client.deleteSubscriptions(ids);
+                            }
                         });
                     };
 
@@ -160,7 +168,7 @@ public class OpcUaOperationSupport {
             );
 
             HistoryReadValueId historyReadValueId = new HistoryReadValueId(
-                    new NodeId(5, "Counter1"),
+                    new NodeId(2, "FE6.AFSM.AFSM050_ReadRFID"),
                     null,
                     QualifiedName.NULL_VALUE,
                     ByteString.NULL_VALUE

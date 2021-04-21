@@ -37,7 +37,7 @@ public class OpcUaReadNodeTask {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Async
-    @Scheduled(cron = "0/30 * * * * ?")
+    @Scheduled(cron = "0/30 * 1 * * ?")
     public void setReadNodeSupport() {
         try {
             log.info("获取节点状态信息");
@@ -71,7 +71,7 @@ public class OpcUaReadNodeTask {
         }
     }
 
-    @Scheduled(cron = "0/30 * * * * ?")
+    @Scheduled(cron = "0/30 * 1 * * ?")
     public void setSimulation() {
         try {
             log.info("获取 Simulation 模拟信息模型数据");
